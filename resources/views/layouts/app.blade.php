@@ -10,10 +10,27 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
         <div class="container">
             <a class="navbar-brand" href="{{ route('home') }}">📦 Складський облік</a>
-            <div class="navbar-nav">
+            <div class="navbar-nav me-auto">
                 <a class="nav-link" href="{{ route('home') }}">Головна</a>
                 <a class="nav-link" href="{{ route('stock-items.index') }}">Товари</a>
-                <a class="nav-link" href="{{ route('stock-items.create') }}">Додати товар</a>
+                @auth
+                    <a class="nav-link" href="{{ route('stock-items.create') }}">Додати товар</a>
+                @endauth
+            </div>
+
+            <div class="navbar-nav ms-auto">
+                @guest
+                    <a class="nav-link" href="{{ route('login') }}">Увійти</a>
+                    <a class="nav-link" href="{{ route('register') }}">Реєстрація</a>
+                @endguest
+
+                @auth
+                    <span class="nav-link text-info">{{ Auth::user()->name }}</span>
+                    <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                        @csrf
+                        <button type="submit" class="btn btn-link nav-link">Вийти</button>
+                    </form>
+                @endauth
             </div>
         </div>
     </nav>
@@ -25,5 +42,7 @@
 
         @yield('content')
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

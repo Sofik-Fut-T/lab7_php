@@ -1,0 +1,374 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API Інформаційної Системи «Складський облік»",
+        "description": "Документація REST API для лабораторної роботи №8",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000/api/v1",
+            "description": "Локальний сервер розробки"
+        }
+    ],
+    "paths": {
+        "/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Реєстрація нового користувача та отримання Bearer-токена",
+                "operationId": "5d4fa5d5607ed675ba93907e1fc94534",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Олена Коваленко"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "olena@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Користувача зареєстровано"
+                    },
+                    "422": {
+                        "description": "Помилка валідації"
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Автентифікація користувача та отримання Bearer-токена",
+                "operationId": "67d6d0fdd54fba132e1b6f55ca254183",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "olena@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Успішний вхід (повертає об'єкт user та token)"
+                    },
+                    "422": {
+                        "description": "Невірні облікові дані"
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Вихід із системи (відкликання поточного токена)",
+                "operationId": "28d48c13fca984400ac8de99f54ee13a",
+                "responses": {
+                    "200": {
+                        "description": "Вихід виконано успішно"
+                    },
+                    "401": {
+                        "description": "Неавторизований доступ"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/stock-items": {
+            "get": {
+                "tags": [
+                    "StockItems"
+                ],
+                "summary": "Отримати список товарів на складі із пагінацією",
+                "operationId": "7bda62eebb2c4ed6cab5669438b1f909",
+                "responses": {
+                    "200": {
+                        "description": "Успішне отримання списку"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "StockItems"
+                ],
+                "summary": "Створити новий товар на складі",
+                "operationId": "8fa9461a2deb6cc8e948408dd49f005b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "sku",
+                                    "quantity",
+                                    "category_id"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Ноутбук ASUS ZenBook"
+                                    },
+                                    "sku": {
+                                        "type": "string",
+                                        "example": "NB-2026-01"
+                                    },
+                                    "quantity": {
+                                        "type": "integer",
+                                        "example": 12
+                                    },
+                                    "category_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "suppliers": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "example": [
+                                            1,
+                                            2
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Товар успішно створено"
+                    },
+                    "401": {
+                        "description": "Неавторизований доступ (відсутній токен)"
+                    },
+                    "422": {
+                        "description": "Помилка валідації вхідних даних"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/stock-items/{id}": {
+            "get": {
+                "tags": [
+                    "StockItems"
+                ],
+                "summary": "Отримати детальну інформацію про товар за ID",
+                "operationId": "905a83ebd6bc7fb4fa705b1b88222470",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успішне отримання товару"
+                    },
+                    "404": {
+                        "description": "Товар не знайдено"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "StockItems"
+                ],
+                "summary": "Оновити існуючий товар (лише власник запису)",
+                "operationId": "1a0b741c40c0669163b4dc448b8d5d89",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "sku",
+                                    "quantity",
+                                    "category_id"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Ноутбук ASUS ZenBook Pro"
+                                    },
+                                    "sku": {
+                                        "type": "string",
+                                        "example": "NB-2026-01"
+                                    },
+                                    "quantity": {
+                                        "type": "integer",
+                                        "example": 15
+                                    },
+                                    "category_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "suppliers": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "example": [
+                                            1
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Товар успішно оновлено"
+                    },
+                    "401": {
+                        "description": "Неавторизований доступ"
+                    },
+                    "403": {
+                        "description": "Заборонено: ви не є власником цього товару"
+                    },
+                    "422": {
+                        "description": "Помилка валідації"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "StockItems"
+                ],
+                "summary": "Видалити товар (лише власник запису)",
+                "operationId": "2ce1547759e36a94360f3dd98310e409",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Товар успішно видалено"
+                    },
+                    "401": {
+                        "description": "Неавторизований доступ"
+                    },
+                    "403": {
+                        "description": "Заборонено: ви не є власником цього товару"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "Auth"
+        },
+        {
+            "name": "StockItems",
+            "description": "StockItems"
+        }
+    ]
+}

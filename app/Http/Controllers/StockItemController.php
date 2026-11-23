@@ -33,6 +33,8 @@ class StockItemController extends Controller
             'suppliers.*' => 'exists:suppliers,id',
         ]);
 
+        $validated['user_id'] = auth()->id();
+
         $item = StockItem::create($validated);
         $item->suppliers()->sync($request->input('suppliers', []));
 
@@ -42,6 +44,8 @@ class StockItemController extends Controller
 
     public function edit(StockItem $stockItem)
     {
+        $this->authorize('update', $stockItem);
+
         $categories = Category::all();
         $suppliers = Supplier::all();
         return view('stock_items.edit', compact('stockItem', 'categories', 'suppliers'));
@@ -49,6 +53,8 @@ class StockItemController extends Controller
 
     public function update(Request $request, StockItem $stockItem)
     {
+        $this->authorize('update', $stockItem);
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'sku' => 'required|string|max:50|unique:stock_items,sku,' . $stockItem->id,
@@ -67,6 +73,8 @@ class StockItemController extends Controller
 
     public function destroy(StockItem $stockItem)
     {
+        $this->authorize('delete', $stockItem);
+
         $stockItem->delete();
 
         return redirect()->route('stock-items.index')
