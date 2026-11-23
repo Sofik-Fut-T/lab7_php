@@ -3,17 +3,30 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class StockItem extends Model
 {
-    protected $fillable = ['title', 'sku', 'quantity', 'category_id'];
+    protected $fillable = [
+        'user_id',
+        'title',
+        'sku',
+        'quantity',
+        'category_id',
+    ];
 
-    public function category()
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
 
-    public function suppliers()
+    public function suppliers(): BelongsToMany
     {
         return $this->belongsToMany(Supplier::class);
     }
